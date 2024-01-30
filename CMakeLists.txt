@@ -3,20 +3,19 @@ project(autodiff)
 
 set(CMAKE_CXX_STANDARD 23)
 
+set(GTEST_ROOT "/Users/aliaksandrzyl/Desktop/projects/googletest")
 # Include GoogleTest library
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        release-1.10.0
-)
-FetchContent_MakeAvailable(googletest)
+find_package(GTest REQUIRED)
 
 enable_testing()
 
-# Add test cpp file
-add_executable(runTests
-        tests/simple_tests.cpp)
+add_subdirectory(tests)
 
-target_link_libraries(runTests gtest gtest_main)
-include_directories(include)
+#set(CMAKE_FIND_DEBUG_MODE TRUE)
+
+list(APPEND CMAKE_PREFIX_PATH "/Users/aliaksandrzyl/Qt/6.6.1/macos")
+# add subdirectory only when QT is found
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+if(Qt6Core_FOUND)
+    add_subdirectory(visualization)
+endif()
