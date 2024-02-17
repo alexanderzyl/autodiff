@@ -37,7 +37,12 @@ TEST_F(TestGradients, test_constants) {
     auto result = lambda(x, y);
     EXPECT_EQ(result, 3.0 - 16.0 + 1.5);
 
-//    auto grad = multivariate::differentiate<decltype(lambda), 2>(lambda);
-//    auto grad_x = grad.partial<0>();
-//    auto grad_y = grad.partial<1>();
+    auto grad = multivariate::differentiate<decltype(lambda), 2>(lambda);
+    auto grad_x = grad.partial<0>();
+    auto grad_y = grad.partial<1>();
+
+    auto xy_dx = grad_x(x, y);
+    auto xy_dy = grad_y(x, y);
+    EXPECT_EQ(xy_dx, 3.0);
+    EXPECT_EQ(xy_dy, -6.0 * y * y);
 }

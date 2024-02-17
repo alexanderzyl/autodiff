@@ -1,5 +1,6 @@
 #pragma once
 #include "tuple_arithmetics.h"
+#include "partials.h"
 #include "functor.h"
 #include "epsilon.h"
 
@@ -9,55 +10,6 @@ namespace multivariate {
     using arithmetics::operator*;
     using arithmetics::operator+;
     using arithmetics::operator-;
-
-    template<IsFunctor ...F>
-    struct _partials {
-        std::tuple<F...> partials;
-
-        _partials(F... f) : partials(f...) {}
-
-        explicit _partials(const std::tuple<F...>& tuple) : partials(tuple) {}
-
-        template<typename V, auto pos>
-        constexpr auto dx(V v_tuple) const {
-            return std::get<pos>(partials)(v_tuple);
-        }
-
-        static constexpr bool is_partials = true;
-    };
-
-    template <typename T>
-    concept IsPartials = T::is_partials;
-
-    // arithmetics for _partials
-    template<typename ...F1, typename ...F2>
-    constexpr auto operator+(const _partials<F1...>& a, const _partials<F2...>& b) {
-        auto new_partials = _partials(a.partials + b.partials);
-        static_assert(IsPartials<decltype(new_partials)>);
-        return new_partials;
-    }
-
-    template<typename ...F1, typename ...F2>
-    constexpr auto operator*(const _partials<F1...>& a, const _partials<F2...>& b) {
-        auto new_partials = a.partials * b.partials;
-        static_assert(IsPartials<decltype(new_partials)>);
-        return new_partials;
-    }
-
-    // arithmetics for _partials and _functor
-    template<typename F1, typename ...F2>
-    constexpr auto operator*(const functor<F1>& a, const _partials<F2...>& b) {
-        auto new_partials = _partials(a * b.partials);
-        static_assert(IsPartials<decltype(new_partials)>);
-        return new_partials;
-    }
-
-    template<typename F1, typename ...F2>
-    constexpr auto operator*(const _partials<F2...>& a, const functor<F1>& b) {
-        auto new_partials = b * a;
-        static_assert(IsPartials<decltype(new_partials)>);
-        return new_partials;
-    }
 
     template<typename FX, typename ...DXs>
     struct dual {
@@ -87,9 +39,55 @@ namespace multivariate {
         return dual{a.x * b.x, p};
     }
 
+    template<typename T, typename FX, typename ...DXs>
+    requires std::is_arithmetic_v<T>
+    constexpr auto operator*(T a, dual<FX, DXs...> b) {
+        auto dx = a * b.dx;
+        static_assert(IsPartials<decltype(dx)>);
+        return dual{a * b.x, dx};
+    }
+
+    template<typename T, typename FX, typename ...DXs>
+    requires std::is_arithmetic_v<T>
+    constexpr auto operator*(dual<FX, DXs...> a, T b) {
+        auto dx = a.dx * b;
+        static_assert(IsPartials<decltype(dx)>);
+        return dual{a.x * b, dx};
+    }
+
     // Additions
     template<typename FX1, typename ...DXs1, typename FX2, typename ...DXs2>
     constexpr auto operator+(dual<FX1, DXs1...> a, dual<FX2, DXs2...> b) {
         return dual{a.x + b.x, a.dx + b.dx};
+    }
+
+    template<typename T, typename FX, typename ...DXs>
+    requires std::is_arithmetic_v<T>
+    constexpr auto operator+(T a, dual<FX, DXs...> b) {
+        return dual{a + b.x, b.dx};
+    }
+
+    template<typename T, typename FX, typename ...DXs>
+    requires std::is_arithmetic_v<T>
+    constexpr auto operator+(dual<FX, DXs...> a, T b) {
+        return dual{a.x + b, a.dx};
+    }
+
+    // Subtractions
+    template<typename FX1, typename ...DXs1, typename FX2, typename ...DXs2>
+    constexpr auto operator-(dual<FX1, DXs1...> a, dual<FX2, DXs2...> b) {
+        return dual{a.x - b.x, a.dx - b.dx};
+    }
+
+    template<typename T, typename FX, typename ...DXs>
+    requires std::is_arithmetic_v<T>
+    constexpr auto operator-(T a, dual<FX, DXs...> b) {
+        return dual{a - b.x, b.dx};
+    }
+
+    template<typename T, typename FX, typename ...DXs>
+    requires std::is_arithmetic_v<T>
+    constexpr auto operator-(dual<FX, DXs...> a, T b) {
+        return dual{a.x - b, a.dx};
     }
 }
