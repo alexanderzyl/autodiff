@@ -98,6 +98,13 @@ namespace multivariate
         return new_partials;
     }
 
+    template<typename ...F>
+    constexpr auto operator-(const _partials<F...>& a) {
+        auto new_partials = _partials(-a.partials);
+        static_assert(IsPartials<decltype(new_partials)>);
+        return new_partials;
+    }
+
     // arithmetics for _partials and _functor
     template<typename F1, typename ...F2>
     constexpr auto operator*(const functor<F1>& a, const _partials<F2...>& b) {

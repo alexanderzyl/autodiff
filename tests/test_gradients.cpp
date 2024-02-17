@@ -46,3 +46,19 @@ TEST_F(TestGradients, test_constants) {
     EXPECT_EQ(xy_dx, 3.0);
     EXPECT_EQ(xy_dy, -6.0 * y * y);
 }
+
+//TEST_F(TestGradients, test_division) {
+//    auto func = [](auto x, auto y) {
+//        return 3. * x / -(y*y);
+//    };
+//    auto x = 2.0;
+//    auto y = 3.0;
+//    auto test_func = func(x, y);
+//    EXPECT_NEAR(test_func, -2.0/3.0, 1e-7);
+//    auto grad = multivariate::differentiate<decltype(func), 2>(func);
+//    auto grad_x = grad.partial<0>();
+//    auto grad_y = grad.partial<1>();
+//
+//    auto xy_dx = grad_x(x, y);
+//    auto xy_dy = grad_y(x, y);
+//}

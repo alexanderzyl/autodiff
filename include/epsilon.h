@@ -16,6 +16,10 @@ namespace multivariate
         constexpr auto operator()(V... v) const {
             return 0.0;
         }
+
+        constexpr zero operator-() const {
+            return zero{};
+        }
     };
 
     constexpr auto operator+(const zero& a, const zero& b) {

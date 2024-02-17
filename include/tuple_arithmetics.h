@@ -30,6 +30,18 @@ namespace arithmetics
         return tuple_minus(t1, t2, std::index_sequence_for<T...>{});
     }
 
+    // Negation
+    template<typename... T, std::size_t... Is>
+    auto tuple_minus(const std::tuple<T...>& t1, std::index_sequence<Is...>)
+    {
+        return std::make_tuple(-std::get<Is>(t1)...);
+    }
+    template<typename... T>
+    auto operator-(const std::tuple<T...>& t1)
+    {
+        return tuple_minus(t1, std::index_sequence_for<T...>{});
+    }
+
     template<typename... T, typename... U, std::size_t... Is>
     auto tuple_mult(const std::tuple<T...>& t1, const std::tuple<U...>& t2, std::index_sequence<Is...>)
     {

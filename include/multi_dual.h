@@ -55,6 +55,8 @@ namespace multivariate {
         return dual{a.x * b, dx};
     }
 
+    // Divisions
+
     // Additions
     template<typename FX1, typename ...DXs1, typename FX2, typename ...DXs2>
     constexpr auto operator+(dual<FX1, DXs1...> a, dual<FX2, DXs2...> b) {
@@ -89,5 +91,11 @@ namespace multivariate {
     requires std::is_arithmetic_v<T>
     constexpr auto operator-(dual<FX, DXs...> a, T b) {
         return dual{a.x - b, a.dx};
+    }
+
+    // Negations
+    template<typename FX, typename ...DXs>
+    constexpr auto operator-(dual<FX, DXs...> a) {
+        return dual{-a.x, -a.dx};
     }
 }

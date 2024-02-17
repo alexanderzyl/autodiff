@@ -76,6 +76,15 @@ namespace multivariate
         return functor<decltype(new_func)>(new_func);
     }
 
+    // Negations
+    template<typename F>
+    constexpr auto operator-(const functor<F>& a) {
+        auto new_func = [a](auto... v) {
+            return -a(v...);
+        };
+        return functor<decltype(new_func)>(new_func);
+    }
+
     // Multiplications
     template<typename F1, typename F2>
     constexpr auto operator*(const functor<F1>& a, const functor<F2>& b) {
