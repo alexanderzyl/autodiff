@@ -63,7 +63,11 @@ namespace multivariate
 
         template<auto arg>
         auto partial() const {
-            return std::get<arg>(_dual.dx.partials);
+            auto args_func = [this](auto&&... args) {
+                auto tuple = std::make_tuple(std::forward<decltype(args)>(args)...);
+                return std::get<arg>(_dual.dx.partials)(tuple);
+            };
+            return args_func;
         }
     };
     template<typename F, int numargs>
