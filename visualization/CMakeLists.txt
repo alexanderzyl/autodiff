@@ -11,6 +11,7 @@ qt_add_executable(visualization
         differentials.cpp
         taylor.cpp
         solvers.cpp
+        sigmoid.cpp
 )
 
 # Add the GTest library directory

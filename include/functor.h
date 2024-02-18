@@ -1,13 +1,15 @@
 #pragma once
 #include <type_traits>
 
+#include "pow.h"
+
 namespace multivariate
 {
     template<typename F>
     struct functor {
         F func;
 
-        explicit functor(F f) : func(f) {}
+        constexpr explicit functor(F f) : func(f) {}
 
         template<typename ...V>
         constexpr auto operator()(V... v) const {
@@ -108,6 +110,18 @@ namespace multivariate
     constexpr auto operator*(const functor<F>& a, T b) {
         auto new_func = [a, b](auto... v) {
             return a(v...) * b;
+        };
+        return functor<decltype(new_func)>(new_func);
+    }
+}
+
+namespace arithmetics
+{
+    using namespace multivariate;
+    template<int N,  typename F>
+    constexpr auto pow(const functor<F>& f) {
+        auto new_func = [f](auto... v) {
+            return pow<N>(f(v...));
         };
         return functor<decltype(new_func)>(new_func);
     }

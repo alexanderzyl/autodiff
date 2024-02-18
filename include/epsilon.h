@@ -79,6 +79,26 @@ namespace multivariate
         return b;
     }
 
+    template<typename F>
+    constexpr auto operator+(const functor<F>& a, const epsilon& b) {
+        return functor([a, b](auto... v) {
+            return a(v...) + b(v...);
+        });
+    }
+
+    template<typename F>
+    constexpr auto operator+(const epsilon& a, const functor<F>& b) {
+        return functor([a, b](auto... v) {
+            return a(v...) + b(v...);
+        });
+    }
+
+    constexpr auto operator-(const epsilon& a) {
+        return functor([a](auto... v) {
+            return -a(v...);
+        });
+    }
+
     // arithmetics for _functor and _zero
     template<typename F>
     constexpr auto operator*(const functor<F>& a, const zero& b) {

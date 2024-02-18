@@ -7,6 +7,7 @@ include_directories(
 link_directories(${GTEST_ROOT}/cmake-build-debug/lib)
 
 add_executable(runTests
+        test_pow.cpp
         test_differentiation.cpp
         test_algorithms.cpp
         test_polynomials.cpp

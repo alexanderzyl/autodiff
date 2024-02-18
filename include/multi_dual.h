@@ -1,8 +1,10 @@
 #pragma once
-#include "tuple_arithmetics.h"
 #include "partials.h"
 #include "functor.h"
 #include "epsilon.h"
+
+#include "tuple_arithmetics.h"
+#include "pow.h"
 
 namespace multivariate {
 
@@ -10,6 +12,7 @@ namespace multivariate {
     using arithmetics::operator*;
     using arithmetics::operator+;
     using arithmetics::operator-;
+    using arithmetics::pow;
 
     template<typename FX, typename ...DXs>
     struct dual {
@@ -55,8 +58,6 @@ namespace multivariate {
         return dual{a.x * b, dx};
     }
 
-    // Divisions
-
     // Additions
     template<typename FX1, typename ...DXs1, typename FX2, typename ...DXs2>
     constexpr auto operator+(dual<FX1, DXs1...> a, dual<FX2, DXs2...> b) {
@@ -98,4 +99,28 @@ namespace multivariate {
     constexpr auto operator-(dual<FX, DXs...> a) {
         return dual{-a.x, -a.dx};
     }
+}
+
+namespace arithmetics
+{
+    using namespace multivariate;
+    // Powers
+    template<int N, typename FX, typename ...DXs>
+    constexpr auto pow(dual<FX, DXs...> a) {
+        auto dx = N * pow<N - 1>(a.x) * a.dx;
+        static_assert(IsPartials<decltype(dx)>);
+        return dual{pow<N>(a.x), dx};
+    }
+
+}
+
+namespace multivariate
+{
+    // Divisions
+
+    template<typename FX1, typename ...DXs1, typename FX2, typename ...DXs2>
+    constexpr auto operator/(dual<FX1, DXs1...> a, dual<FX2, DXs2...> b) {
+        return a * arithmetics::pow<-1>(b);
+    }
+
 }
