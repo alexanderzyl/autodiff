@@ -17,10 +17,10 @@ TEST_F(TestGradients, simple) {
     auto z = 3.0;
     auto test_func = func(x, y, z);
     EXPECT_EQ(test_func, 5.0);
-    auto grad = multivariate::differentiate<decltype(func), 3>(func);
-    auto grad_x = grad.partial<0>();
-    auto grad_y = grad.partial<1>();
-    auto grad_z = grad.partial<2>();
+    auto grad = multivariate::differentiate<3>(func);
+    auto grad_x = grad.function<0>();
+    auto grad_y = grad.function<1>();
+    auto grad_z = grad.function<2>();
 
     auto xyz1_dx = grad_x(x, y, z);
     auto xyz1_dy = grad_y(x, y, z);
@@ -41,10 +41,10 @@ TEST_F(TestGradients, simple2) {
     auto test_func = func(x, y, z);
     EXPECT_EQ(test_func, -2.0 + 2.0);
 
-    auto grad = multivariate::differentiate<decltype(func), 3>(func);
-    auto grad_x = grad.partial<0>();
-    auto grad_y = grad.partial<1>();
-    auto grad_z = grad.partial<2>();
+    auto grad = multivariate::differentiate<3>(func);
+    auto grad_x = grad.function<0>();
+    auto grad_y = grad.function<1>();
+    auto grad_z = grad.function<2>();
 
     auto xyz2_dx = grad_x(x, y, z);
     auto xyz2_dy = grad_y(x, y, z);
@@ -65,9 +65,9 @@ TEST_F(TestGradients, constants) {
     auto result = lambda(x, y);
     EXPECT_EQ(result, 3.0 - 16.0 + 1.5);
 
-    auto grad = multivariate::differentiate<decltype(lambda), 2>(lambda);
-    auto grad_x = grad.partial<0>();
-    auto grad_y = grad.partial<1>();
+    auto grad = multivariate::differentiate<2>(lambda);
+    auto grad_x = grad.function<0>();
+    auto grad_y = grad.function<1>();
 
     auto xy_dx = grad_x(x, y);
     auto xy_dy = grad_y(x, y);
@@ -77,7 +77,7 @@ TEST_F(TestGradients, constants) {
 
 TEST_F(TestGradients, powers) {
     auto func = [](auto x, auto y) {
-        return arithmetics::pow<3>(x) + 2. * arithmetics::pow<-1>(y);
+        return multivariate::pow<3>(x) + 2. * multivariate::pow<-1>(y);
     };
 
     auto x = -2.0;
@@ -86,40 +86,40 @@ TEST_F(TestGradients, powers) {
     auto test_func = func(x, y);
     EXPECT_EQ(test_func, -8.0 + 2.0 / (-3.0));
 
-    auto grad = multivariate::differentiate<decltype(func), 2>(func);
+    auto grad = multivariate::differentiate<2>(func);
 
-    auto grad_x = grad.partial<0>();
-    auto grad_y = grad.partial<1>();
+    auto grad_x = grad.function<0>();
+    auto grad_y = grad.function<1>();
 
     auto xy_dx = grad_x(x, y);
     auto xy_dy = grad_y(x, y);
 
     EXPECT_EQ(xy_dx, 3.0 * x * x);
-    EXPECT_EQ(xy_dy, -2.0 * arithmetics::pow<-2>(y));
+    EXPECT_EQ(xy_dy, -2.0 * multivariate::pow<-2>(y));
 }
 
 TEST_F(TestGradients, multivariate_powers)
 {
     auto func = [](auto x, auto y) {
-        return arithmetics::pow<-2>(x) - arithmetics::pow<3>(y * x + y);
+        return multivariate::pow<-2>(x) - multivariate::pow<3>(y * x + y);
     };
 
     auto x = 2.0;
     auto y = 3.0;
 
     auto test_func = func(x, y);
-    EXPECT_EQ(test_func, 1./4. - arithmetics::pow<3>(2. * 3. + 3.));
+    EXPECT_EQ(test_func, 1./4. - multivariate::pow<3>(2. * 3. + 3.));
 
-    auto grad = multivariate::differentiate<decltype(func), 2>(func);
+    auto grad = multivariate::differentiate<2>(func);
 
-    auto grad_x = grad.partial<0>();
-    auto grad_y = grad.partial<1>();
+    auto grad_x = grad.function<0>();
+    auto grad_y = grad.function<1>();
 
     auto xy_dx = grad_x(x, y);
     auto xy_dy = grad_y(x, y);
 
-    EXPECT_EQ(xy_dx, -2.0 * arithmetics::pow<-3>(x) - 3 * arithmetics::pow<2>(y*x + y) * y);
-    EXPECT_EQ(xy_dy, -3.0 * arithmetics::pow<2>(y*x + y) * (x + 1));
+    EXPECT_EQ(xy_dx, -2.0 * multivariate::pow<-3>(x) - 3 * multivariate::pow<2>(y*x + y) * y);
+    EXPECT_EQ(xy_dy, -3.0 * multivariate::pow<2>(y*x + y) * (x + 1));
 }
 
 TEST_F(TestGradients, division) {
@@ -130,9 +130,9 @@ TEST_F(TestGradients, division) {
     auto y = 3.0;
     auto test_func = func(x, y);
     EXPECT_NEAR(test_func, -2.0/3.0, 1e-7);
-    auto grad = multivariate::differentiate<decltype(func), 2>(func);
-    auto grad_x = grad.partial<0>();
-    auto grad_y = grad.partial<1>();
+    auto grad = multivariate::differentiate<2>(func);
+    auto grad_x = grad.function<0>();
+    auto grad_y = grad.function<1>();
 
     auto xy_dx = grad_x(x, y);
     auto xy_dy = grad_y(x, y);
@@ -155,6 +155,12 @@ TEST_F(TestGradients, sigmoid)
     auto result = sigmoid(x, offset, scale, max, min);
     EXPECT_NEAR(result, 2.5, 1e-7);
 
-    auto grad = multivariate::differentiate<decltype(sigmoid), 5>(sigmoid);
+    auto grad = multivariate::differentiate<5>(sigmoid);
+
+    auto grad_x = grad.function<0>();
+    auto grad_offset = grad.function<1>();
+    auto grad_scale = grad.function<2>();
+    auto grad_max = grad.function<3>();
+    auto grad_min = grad.function<4>();
 
 }

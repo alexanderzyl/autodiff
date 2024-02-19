@@ -43,36 +43,48 @@ namespace multivariate
         _gradientBuilder(F func) : func(func) {}
     };
 
-    template<typename F, int numargs>
-    static constexpr auto _init_dual(F func) {
-        auto tuple_func = [&func](auto&& tup) {
-            return std::apply(func, tup);
-        };
-        auto grad_init = _gradientBuilder<decltype(tuple_func), numargs>{tuple_func};
-        return grad_init.gradient();
-    }
-
-    template<typename F, auto numargs>
+    template<typename D, auto numargs>
+    requires IsDual<D>
     struct _gradient {
-        decltype(_init_dual<F, numargs>(std::declval<F>()))_dual;
-
-        explicit _gradient(F func) : _dual(_init_dual<F, numargs>(func)) {
-        }
+        D _dual;
+        static constexpr auto num_args = numargs;
+        explicit _gradient(D dual) : _dual(dual) {}
 
     public:
-
         template<auto arg>
-        auto partial() const {
+        auto function() const {
             auto args_func = [this](auto&&... args) {
                 auto tuple = std::make_tuple(std::forward<decltype(args)>(args)...);
                 return std::get<arg>(_dual.dx.partials)(tuple);
             };
             return args_func;
         }
+
+        template<auto arg>
+        auto partial() const {
+            auto partial = std::get<arg>(_dual.dx.partials);
+            return partial;
+        }
     };
-    template<typename F, int numargs>
+    template<auto numargs, typename F>
     auto differentiate(const F &func) {
 
-        return _gradient<F, numargs>(func);
+        if constexpr (IsFunctor<F>)
+        {
+            auto builder = _gradientBuilder<decltype(func), numargs>{func};
+            auto dual = builder.gradient();
+            static_assert(IsDual<decltype(dual)>);
+            return _gradient<decltype(dual), numargs>(dual);
+        }
+        else {
+            auto tuple_func = [&func](auto &&tup) {
+                return std::apply(func, tup);
+            };
+            auto grad_init = _gradientBuilder<decltype(tuple_func), numargs>{tuple_func};
+            auto dual = grad_init.gradient();
+            static_assert(IsDual<decltype(dual)>);
+            return _gradient<decltype(dual), numargs>(dual);
+        }
     }
+
 }

@@ -12,7 +12,6 @@ namespace multivariate {
     using arithmetics::operator*;
     using arithmetics::operator+;
     using arithmetics::operator-;
-    using arithmetics::pow;
 
     template<typename FX, typename ...DXs>
     struct dual {
@@ -25,6 +24,8 @@ namespace multivariate {
         constexpr dual(functor<FX>&& x, _partials<DXs...>&& dx) : x(std::move(x)), dx(std::move(dx)) {}
 
         static constexpr bool is_dual = true;
+
+        static constexpr int num_args = sizeof...(DXs);
     };
 
     template <typename T>
@@ -99,11 +100,7 @@ namespace multivariate {
     constexpr auto operator-(dual<FX, DXs...> a) {
         return dual{-a.x, -a.dx};
     }
-}
 
-namespace arithmetics
-{
-    using namespace multivariate;
     // Powers
     template<int N, typename FX, typename ...DXs>
     constexpr auto pow(dual<FX, DXs...> a) {
@@ -112,15 +109,11 @@ namespace arithmetics
         return dual{pow<N>(a.x), dx};
     }
 
-}
-
-namespace multivariate
-{
     // Divisions
 
     template<typename FX1, typename ...DXs1, typename FX2, typename ...DXs2>
     constexpr auto operator/(dual<FX1, DXs1...> a, dual<FX2, DXs2...> b) {
-        return a * arithmetics::pow<-1>(b);
+        return a * multivariate::pow<-1>(b);
     }
 
 }

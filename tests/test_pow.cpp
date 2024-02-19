@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "pow.h"
 
-using namespace arithmetics;
+using namespace multivariate;
 
 class TestPow : public ::testing::Test {
 

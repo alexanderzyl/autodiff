@@ -13,6 +13,7 @@ add_executable(runTests
         test_polynomials.cpp
         test_taylor.cpp
         test_gradients.cpp
+        test_laplacian.cpp
         )
 
 target_link_libraries(runTests

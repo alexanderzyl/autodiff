@@ -46,7 +46,7 @@ TEST_F(DifferentiationTests, differntial) {
     EXPECT_EQ(d2, 0.0);
 }
 
-TEST_F(DifferentiationTests, higer_order_differntials) {
+TEST_F(DifferentiationTests, higer_order_differentials) {
     constexpr auto lambda = [](auto x) {
         return  -2.5*x*x*x + 2. * x * x +3.0 * x + 1.5;
     };

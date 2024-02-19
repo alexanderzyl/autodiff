@@ -113,11 +113,7 @@ namespace multivariate
         };
         return functor<decltype(new_func)>(new_func);
     }
-}
 
-namespace arithmetics
-{
-    using namespace multivariate;
     template<int N,  typename F>
     constexpr auto pow(const functor<F>& f) {
         auto new_func = [f](auto... v) {
