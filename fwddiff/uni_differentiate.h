@@ -28,16 +28,16 @@ namespace univariate {
     private:
         decltype(_init_dual(std::declval<F>())) df;
 
-        explicit _Differential(F func) : df(_init_dual(func)) {
+        constexpr explicit _Differential(F func) : df(_init_dual(func)) {
         }
 
         template<typename F1>
-        friend auto differentiate(const F1 &func);
+        constexpr friend auto differentiate(const F1 &func);
 
         template<typename F1> friend
         struct _Differential;
 
-        auto differentiate() const {
+        constexpr auto differentiate() const {
             auto lambda = [this](auto v) {
                 return df.dx(v);
             };
@@ -63,7 +63,7 @@ namespace univariate {
     concept IsDifferential = T::is_differential;
 
     template<typename F>
-    auto differentiate(const F &func) {
+    constexpr auto differentiate(const F &func) {
         if constexpr (IsDifferential<F>) {
             return func.differentiate();
         } else {
@@ -75,12 +75,5 @@ namespace univariate {
     constexpr auto differentiate_at(F func, T value) {
         auto df = _init_dual(func);
         return df.dx(value);
-    }
-
-
-
-    template<typename F, typename T>
-    consteval auto static_differentiate_at(F func, T value) {
-        return differentiate_at(func, value);
     }
 }

@@ -1,0 +1,6 @@
+#include "uni_differentiate.h"
+#include "polynomial.h"
+#include "uni_math.h"
+#include "uni_polynomial.h"
+#include "abstracts.h"
+#include "abstracts_math.h"

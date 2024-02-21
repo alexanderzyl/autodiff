@@ -1,5 +1,5 @@
-#include "polynomial.h"
-#include "abstracts.h"
+#include <fwddiff/polynomial.h>
+#include <fwddiff/abstracts.h>
 #include <gtest/gtest.h>
 
 class PolynomialTests : public ::testing::Test {
@@ -21,7 +21,8 @@ TEST_F(PolynomialTests, SimpleSecondDegreePolynomial) {
     ASSERT_EQ(p(-3.0), 16.0);
     ASSERT_EQ(p(-0.5), -0.25);
 
-    constexpr auto static_value = polynomials::static_polynomial(p, 1.5);
+    constexpr auto static_value = p(1.5);
+    static_assert(static_value != 0.0, "Static evaluation failed");
     ASSERT_EQ(static_value, 13.75);
     ASSERT_EQ(static_value, p(1.5));
 }

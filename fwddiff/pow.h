@@ -3,7 +3,7 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace multivariate
+namespace univariate
 {
     template <int N, typename T>
     requires std::is_arithmetic_v<T>

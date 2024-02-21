@@ -44,10 +44,4 @@ namespace polynomials
             return evaluate(x, std::index_sequence_for<Ts...>{});
         }
     };
-
-    template<typename... Ts>
-    consteval auto static_polynomial(Polynomial<Ts...> p, double x)
-    {
-        return p(x);
-    }
 } // namespace polynomials

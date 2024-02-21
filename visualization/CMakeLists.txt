@@ -2,20 +2,20 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Charts)
 qt_standard_project_setup()
 
 include_directories(
-        ../include
-        ${GTEST_ROOT}/googletest/include
+        ../
+        ${EIGEN_DIR}
+        ${EIGEN_DIR}/Eigen
+        ${GTest_DIR}/googletest/include
 )
 
 qt_add_executable(visualization
         ChartVisualizers.cpp
         differentials.cpp
         taylor.cpp
-        solvers.cpp
-        sigmoid.cpp
 )
 
 # Add the GTest library directory
-link_directories(${GTEST_ROOT}/cmake-build-debug/lib)
+link_directories(${GTest_DIR}/cmake-build-debug/lib)
 
 # add this line for QApplication to be found
 target_link_libraries(visualization
