@@ -2,14 +2,14 @@
 #include <QChartView>
 #include <QMainWindow>
 
-void ChartVisualizers::SetUp() {
+ChartVisualizers::ChartVisualizers(){
     int argc = 0;
     char **argv = nullptr;
     app = new QApplication(argc, argv);
     chart = new QChart();
 }
 
-void ChartVisualizers::TearDown() {
+ChartVisualizers::~ChartVisualizers() {
     delete app;
 }
 

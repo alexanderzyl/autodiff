@@ -11,6 +11,6 @@ endif()
 
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
-if(Qt6Core_FOUND AND NOT ${GTest_DIR} STREQUAL "")
+if(Qt6Core_FOUND)
     add_subdirectory(visualization)
 endif()

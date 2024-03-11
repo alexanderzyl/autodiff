@@ -1,16 +1,15 @@
 #pragma once
-#include <gtest/gtest.h>
 #include <string>
 #include <QApplication>
 #include <QChart>
 #include <QLineSeries>
 
 
-class ChartVisualizers : public ::testing::Test {
+class ChartVisualizers {
 protected:
-    void SetUp() override;
+    ChartVisualizers();
 
-    void TearDown() override;
+    ~ChartVisualizers();
 
     void addLineSeries(const QList<QPointF> &points, const std::string &name);
 
